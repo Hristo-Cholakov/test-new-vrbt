@@ -1,0 +1,45 @@
+name: Generate Release Notes
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  generate-release-notes:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Check if conventional-changelog-cli is installed
+        id: check-install
+        run: |
+          if ! command -v conventional-changelog &> /dev/null; then
+            echo "conventional-changelog-cli is not installed."
+            echo "Installing it now..."
+            npm install -g conventional-changelog-cli
+          else
+            echo "conventional-changelog-cli is already installed."
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - name: Generate Release Notes
+        if: steps.check-install.outcome == 'success'
+        run: |
+          conventional-changelog -p angular -i CHANGELOG.md -s
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - name: Commit and push changes
+        if: steps.check-install.outcome == 'success'
+        run: |
+          git config --global user.email "svc-wwcoe-ci-admin@vmware.com"
+          git config --global user.name "WWCoE CI admin"
+          git add CHANGELOG.md
+          git commit -m "chore(release): Update changelog [skip ci]"
+          git push
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
