@@ -40,7 +40,7 @@ jobs:
         run: |
             # Generate release notes using conventional-changelog for the specified commit range
             git log $PRE_PUSH_SHA..HEAD --format="%s" >> CHANGELOG.md
-         env:
+        env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - name: Commit and push changes
