@@ -27,10 +27,19 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
+      - name: Get the last successful commit SHA
+        id: last-successful-sha
+        run: |
+          LAST_SHA=$(git log -1 --pretty=%h ${{ github.event.before }})
+          echo "LAST_SHA=$LAST_SHA" >> $GITHUB_ENV
+        if: steps.check-install.outcome == 'success'
+
       - name: Generate Release Notes
         if: steps.check-install.outcome == 'success'
         run: |
           conventional-changelog -p angular -i CHANGELOG.md -s
+          # Extract and append Git commit messages from the last successful push onwards
+          git log $LAST_SHA..HEAD --format="%s" >> CHANGELOG.md
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
