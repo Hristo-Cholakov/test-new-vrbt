@@ -39,7 +39,7 @@ jobs:
         if: steps.check-install.outcome == 'success'
         run: |
             # Generate release notes using conventional-changelog for the specified commit range
-            git log $PRE_PUSH_SHA..HEAD --format="%s" >> CHANGELOG.md
+            echo $PRE_PUSH_SHA >> CHANGELOG.md
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
