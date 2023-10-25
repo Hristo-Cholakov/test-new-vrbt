@@ -31,7 +31,7 @@ jobs:
         id: pre-push-range
         run: |
             # Get the SHA of the commit before the push
-            PRE_PUSH_SHA=$(git log -1 --pretty=%h ${{ github.event.before }})
+            PRE_PUSH_SHA=$(git log -1)
             echo "PRE_PUSH_SHA=$PRE_PUSH_SHA" >> $GITHUB_ENV
         if: steps.check-install.outcome == 'success'
 
